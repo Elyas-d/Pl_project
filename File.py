@@ -12,6 +12,8 @@ TOKEN_REGEX = [
     ("WHILE", r"በማዘጋጀት"),
     ("PRINT", r"አትም"),
     ("INPUT", r"ጠይቅ"),
+    ("LBRACKET", r"\["),
+    ("RBRACKET", r"\]"),
     ("EQ", r"=="), ("NE", r"!="), ("GE", r">="), ("LE", r"<="),
     ("GT", r">"), ("LT", r"<"),
     ("ASSIGN", r"="),
@@ -64,6 +66,10 @@ class FuncCall:
     def __init__(self, name, args): self.name, self.args = name, args
 class Return:
     def __init__(self, value): self.value = value
+class ListLiteral:
+    def __init__(self, elements): self.elements = elements
+class Index:
+    def __init__(self, list_expr, index_expr): self.list_expr, self.index_expr = list_expr, index_expr
 
 # ===== PARSER =====
 class Parser:
@@ -159,6 +165,7 @@ class Parser:
         if token[0] == "STRING": return String(self.match("STRING")[1])
         if token[0] == "IDENT":
             name = self.match("IDENT")[1]
+            # Function call or variable or index
             if self.match("LPAREN"):
                 args = []
                 if not self.peek("RPAREN"):
@@ -166,7 +173,22 @@ class Parser:
                     while self.match("COMMA"): args.append(self.expression())
                 self.expect("RPAREN")
                 return FuncCall(name, args)
-            return Var(name)
+            var = Var(name)
+            # Indexing: var[expr]
+            while self.match("LBRACKET"):
+                index_expr = self.expression()
+                self.expect("RBRACKET")
+                var = Index(var, index_expr)
+            return var
+        if token[0] == "LBRACKET":
+            self.match("LBRACKET")
+            elements = []
+            if not self.peek("RBRACKET"):
+                elements.append(self.expression())
+                while self.match("COMMA"):
+                    elements.append(self.expression())
+            self.expect("RBRACKET")
+            return ListLiteral(elements)
         if token[0] == "LPAREN":
             self.match("LPAREN")
             expr = self.expression()
@@ -184,6 +206,11 @@ class Interpreter:
         if env is None: env = self.globals
         if isinstance(node, Number): return node.value
         if isinstance(node, String): return node.value
+        if isinstance(node, ListLiteral): return [self.eval(e, env) for e in node.elements]
+        if isinstance(node, Index):
+            lst = self.eval(node.list_expr, env)
+            idx = self.eval(node.index_expr, env)
+            return lst[idx]
         if isinstance(node, Var): 
             if node.name in env:
                 return env[node.name]
@@ -234,9 +261,9 @@ def run(code):
 
 # ===== SAMPLE AMHARIC PROGRAM =====
 program = """
-ይዘው አ = 5;
-ይዘው ቤ = 10;
-አትም("ድምሩ: " + (አ + ቤ));
+ይዘው ዝ = [1, 2, 3, 4];
+አትም(ዝ[0]);
+አትም(ዝ[2] + ዝ[3]);
 """
 
 run(program)
