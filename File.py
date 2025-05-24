@@ -39,35 +39,35 @@ def tokenize(code):
 
 # ===== AST CLASSES =====
 class Number:
-    def init(self, value): self.value = int(value)
+    def __init__(self, value): self.value = int(value)
 class String:
-    def init(self, value): self.value = value.strip('"')
+    def __init__(self, value): self.value = value.strip('"')
 class Var:
-    def init(self, name): self.name = name
+    def __init__(self, name): self.name = name
 class BinOp:
-    def init(self, left, op, right): self.left, self.op, self.right = left, op, right
+    def __init__(self, left, op, right): self.left, self.op, self.right = left, op, right
 class Assign:
-    def init(self, name, expr): self.name, self.expr = name, expr
+    def __init__(self, name, expr): self.name, self.expr = name, expr
 class Print:
-    def init(self, expr): self.expr = expr
+    def __init__(self, expr): self.expr = expr
 class Input:
-    def init(self, prompt): self.prompt = prompt
+    def __init__(self, prompt): self.prompt = prompt
 class If:
-    def init(self, cond, then, else_): self.cond, self.then, self.else_ = cond, then, else_
+    def __init__(self, cond, then, else_): self.cond, self.then, self.else_ = cond, then, else_
 class While:
-    def init(self, cond, body): self.cond, self.body = cond, body
+    def __init__(self, cond, body): self.cond, self.body = cond, body
 class Block:
-    def init(self, stmts): self.stmts = stmts
+    def __init__(self, stmts): self.stmts = stmts
 class FuncDef:
-    def init(self, name, params, body): self.name, self.params, self.body = name, params, body
+    def __init__(self, name, params, body): self.name, self.params, self.body = name, params, body
 class FuncCall:
-    def init(self, name, args): self.name, self.args = name, args
+    def __init__(self, name, args): self.name, self.args = name, args
 class Return:
-    def init(self, value): self.value = value
+    def __init__(self, value): self.value = value
 
 # ===== PARSER =====
 class Parser:
-    def init(self, tokens): self.tokens, self.pos = tokens, 0
+    def __init__(self, tokens): self.tokens, self.pos = tokens, 0
 
     def peek(self, t=None):
         if self.pos >= len(self.tokens): return None
@@ -118,9 +118,9 @@ class Parser:
             self.expect("LPAREN")
             params = []
             if self.peek("IDENT"):
-
-params.append(self.expect("IDENT"))
-                while self.match("COMMA"): params.append(self.expect("IDENT"))
+                params.append(self.expect("IDENT"))
+                while self.match("COMMA"):
+                    params.append(self.expect("IDENT"))
             self.expect("RPAREN")
             return FuncDef(name, params, self.block())
         elif self.match("RETURN"):
@@ -176,7 +176,7 @@ params.append(self.expect("IDENT"))
 
 # ===== INTERPRETER =====
 class Interpreter:
-    def init(self):
+    def __init__(self):
         self.globals = {}
         self.functions = {}
 
@@ -218,8 +218,7 @@ class Interpreter:
                 result = self.eval(stmt, local_env)
                 if isinstance(result, tuple) and result[0] == 'return': return result
         if isinstance(node, FuncDef): self.functions[node.name] = node
-
-if isinstance(node, FuncCall):
+        if isinstance(node, FuncCall):
             func = self.functions.get(node.name)
             if not func: raise NameError(f"Undefined function {node.name}")
             local_env = {param: self.eval(arg, env) for param, arg in zip(func.params, node.args)}
