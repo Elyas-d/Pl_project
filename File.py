@@ -1,4 +1,3 @@
-Fele:
 import re
 
 # ===== LEXER =====
