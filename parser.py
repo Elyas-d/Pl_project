@@ -129,6 +129,10 @@ class Parser:
             return Number(self.match("NUMBER")[1])
         if token[0] == "STRING":
             return String(self.match("STRING")[1])
+        if token[0] == "BOOLEAN":
+            # Consume the token and create a Boolean node
+            value = True if self.match("BOOLEAN")[1] == "እውነት" else False
+            return Boolean(value)
         if token[0] == "INPUT":
             self.match("INPUT")
             self.expect("LPAREN")

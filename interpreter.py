@@ -12,6 +12,8 @@ class Interpreter:
             return node.value
         if isinstance(node, String):
             return node.value
+        if isinstance(node, Boolean):
+            return node.value
         if isinstance(node, ListLiteral):
             return [self.eval(e, env) for e in node.elements]
         if isinstance(node, Index):

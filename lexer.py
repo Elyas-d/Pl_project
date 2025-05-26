@@ -12,6 +12,7 @@ TOKEN_REGEX = [
     ("FOR", r"ለ"),
     ("PRINT", r"አትም"),
     ("INPUT", r"ጠይቅ"),
+    ("BOOLEAN", r"እውነት|ሐሰት"),
     ("LBRACKET", r"\["),
     ("RBRACKET", r"\]"),
     ("EQ", r"=="), ("NE", r"!="), ("GE", r">="), ("LE", r"<="),

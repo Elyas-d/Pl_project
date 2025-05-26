@@ -36,3 +36,6 @@ class AssignIndex:
         self.list_expr = list_expr
         self.index_expr = index_expr
         self.value_expr = value_expr
+class Boolean:
+    def __init__(self, value):
+        self.value = value
