@@ -1,5 +1,8 @@
 class Number:
     def __init__(self, value): self.value = int(value)
+class For:
+    def __init__(self, init, cond, step, body):
+        self.init, self.cond, self.step, self.body = init, cond, step, body
 class String:
     def __init__(self, value): self.value = value.strip('"')
 class Var:
@@ -28,3 +31,8 @@ class ListLiteral:
     def __init__(self, elements): self.elements = elements
 class Index:
     def __init__(self, list_expr, index_expr): self.list_expr, self.index_expr = list_expr, index_expr
+class AssignIndex:
+    def __init__(self, list_expr, index_expr, value_expr):
+        self.list_expr = list_expr
+        self.index_expr = index_expr
+        self.value_expr = value_expr

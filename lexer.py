@@ -9,6 +9,7 @@ TOKEN_REGEX = [
     ("IF", r"ከሆነ"),
     ("ELSE", r"ካልሆነ"),
     ("WHILE", r"በማዘጋጀት"),
+    ("FOR", r"ለ"),
     ("PRINT", r"አትም"),
     ("INPUT", r"ጠይቅ"),
     ("LBRACKET", r"\["),
