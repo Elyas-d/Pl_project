@@ -1,6 +1,10 @@
 import re
 
 TOKEN_REGEX = [
+    ("MLCOMMENT", r"/\*[\s\S]*?\*/"),
+    ("COMMENT", r"(//[^\n]*|#[^\n]*)"),
+    ("PLUS_ASSIGN", r"\+\="),
+    ("MINUS_ASSIGN", r"\-\="),
     ("NUMBER", r"\d+"),
     ("STRING", r'"[^"]*"'),
     ("LET", r"ይዘው"),
@@ -28,14 +32,18 @@ TOKEN_REGEX = [
 
 def tokenize(code):
     tokens = []
-    while code:
-        for token_type, regex in TOKEN_REGEX:
-            match = re.match(regex, code)
+    pos = 0
+    while pos < len(code):
+        match = None
+        for token_type, pattern in TOKEN_REGEX:
+            regex = re.compile(pattern)
+            match = regex.match(code, pos)
             if match:
-                if token_type != "WHITESPACE":
+                # Skip whitespace, single-line comments, and multi-line comments.
+                if token_type not in {"WHITESPACE", "COMMENT", "MLCOMMENT"}:
                     tokens.append((token_type, match.group(0)))
-                code = code[match.end():]
+                pos = match.end()
                 break
-        else:
-            raise SyntaxError(f"Unexpected character: {code[0]}")
+        if not match:
+            raise SyntaxError(f"Illegal character: {code[pos]}")
     return tokens

@@ -51,6 +51,19 @@ program = """
 } ካልሆነ {
     አትም("flag is false");
 }
+# ይህ እንደ ምሳሌ ነው
+// ይህም አንድ አስተያየት ነው
+/* This is a multi-line comment.
+   It spans multiple lines.
+*/
+ይዘው ድ = 1;
+አትም(ድ);  # ድን print እናረጋለን
+
+ይዘው a = 5;
+a += 1;
+አትም(a);
+a -= 2;
+አትም(a);
 """
 
 run(program)

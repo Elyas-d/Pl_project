@@ -102,6 +102,7 @@ class Parser:
     # We add an assignment grammar so that e.g. "አ = አ + 1" can appear as an expression.
     def assignment(self):
         expr = self.equality()
+        # Handle simple assignment
         if self.peek("ASSIGN"):
             self.match("ASSIGN")
             value = self.assignment()
@@ -109,6 +110,22 @@ class Parser:
                 return Assign(expr.name, value)
             elif isinstance(expr, Index):
                 return AssignIndex(expr.list_expr, expr.index_expr, value)
+            else:
+                raise SyntaxError("Invalid assignment target")
+        # Handle compound assignments, e.g., a += 1 or a -= 2
+        elif self.peek("PLUS_ASSIGN") or self.peek("MINUS_ASSIGN"):
+            if self.peek("PLUS_ASSIGN"):
+                self.match("PLUS_ASSIGN")
+                op = "+"
+            else:
+                self.match("MINUS_ASSIGN")
+                op = "-"
+            value = self.assignment()
+            # Desugar: a += 1 becomes a = a + 1
+            if isinstance(expr, Var):
+                return Assign(expr.name, BinOp(expr, op, value))
+            elif isinstance(expr, Index):
+                return AssignIndex(expr.list_expr, expr.index_expr, BinOp(expr, op, value))
             else:
                 raise SyntaxError("Invalid assignment target")
         return expr
